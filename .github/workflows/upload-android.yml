@@ -35,7 +35,7 @@ jobs:
         run: |
           mkdir $WORKING_DIRECTORY/.godot/
           cp $WORKING_DIRECTORY/export_credentials.android.example $WORKING_DIRECTORY/.godot/export_credentials.cfg
-          sed -i "s|KEYSTORE_RELEASE_PATH|../release.keystore|g" $WORKING_DIRECTORY/.godot/export_credentials.cfg
+          sed -i "s|KEYSTORE_RELEASE_PATH|$GITHUB_WORKSPACE/mygame.keystore|g" $WORKING_DIRECTORY/.godot/export_credentials.cfg
           sed -i "s|ANDROID_KEYSTORE_ALIAS|$ANDROID_KEYSTORE_ALIAS|g" $WORKING_DIRECTORY/.godot/export_credentials.cfg
           sed -i "s|ANDROID_KEYSTORE_PASSWORD|$ANDROID_KEYSTORE_PASSWORD|g" $WORKING_DIRECTORY/.godot/export_credentials.cfg
 
