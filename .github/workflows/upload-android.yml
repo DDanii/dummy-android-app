@@ -1,0 +1,57 @@
+name: Android upload
+
+on:
+  push:
+    paths:
+      - "version"
+      - ".github/workflows/upload-android.yml"
+
+env:
+  GODOT_VERSION: 4.3
+  ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
+  ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+  SERVICE_ACCOUNT_JSON: ${{ secrets.ANDROID_SERVICE_ACCOUNT_JSON }}
+  WORKING_DIRECTORY: ""
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Read version number and version code
+        run: |
+          echo "VERSION_CODE=$(cat version)" >> $GITHUB_ENV
+
+      - name: Create service-account.json
+        run: echo $SERVICE_ACCOUNT_JSON > service-account.json
+
+      - name: Create export_presets.cfg and inject values
+        run: |
+          sed -i "s|VERSION_CODE|$VERSION_CODE|g" $WORKING_DIRECTORY/export_presets.cfg
+
+      - name: Create export_credentials.cfg and inject values
+        run: |
+          mkdir $WORKING_DIRECTORY/.godot/
+          cp $WORKING_DIRECTORY/export_credentials.android.example $WORKING_DIRECTORY/.godot/export_credentials.cfg
+          sed -i "s|KEYSTORE_RELEASE_PATH|$GITHUB_WORKSPACE/release.keystore|g" $WORKING_DIRECTORY/.godot/export_credentials.cfg
+          sed -i "s|ANDROID_KEYSTORE_ALIAS|$ANDROID_KEYSTORE_ALIAS|g" $WORKING_DIRECTORY/.godot/export_credentials.cfg
+          sed -i "s|ANDROID_KEYSTORE_PASSWORD|$ANDROID_KEYSTORE_PASSWORD|g" $WORKING_DIRECTORY/.godot/export_credentials.cfg
+
+      - name: Godot Android export
+        uses: dulvui/godot-android-export@v4.0.4
+        with:
+          godot-version: ${{ env.GODOT_VERSION }}
+          working-directory: $WORKING_DIRECTORY
+
+      - name: Publish to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: service-account.json
+          packageName: com.DDSoft.games.test
+          releaseFiles: Truck.aab
+          track: "internal"
+          status: completed
+
+ 
