@@ -43,7 +43,6 @@ jobs:
         uses: dulvui/godot-android-export@v4.0.4
         with:
           godot-version: ${{ env.GODOT_VERSION }}
-          working-directory: ${{ env.WORKING_DIRECTORY }}
 
       - name: Publish to Play Store
         uses: r0adkll/upload-google-play@v1
