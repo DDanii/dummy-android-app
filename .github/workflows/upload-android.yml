@@ -51,6 +51,6 @@ jobs:
           packageName: com.DDSoft.games.test
           releaseFiles: Truck.aab
           track: "internal"
-          status: completed
+          status: draft
 
  
