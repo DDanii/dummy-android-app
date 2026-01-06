@@ -1,10 +1,7 @@
 name: Android upload
-
 on:
-  push:
-    paths:
-      - "version"
-      - ".github/workflows/upload-android.yml"
+   schedule:
+     - cron: "1 1 7 1,4,8 *"
 
 env:
   GODOT_VERSION: 4.3
@@ -18,7 +15,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: version up
+        run: |
+          echo $(($(cat version) + 1)) > version
+      - name: Commit files
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -a -m "Version increase"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
 
       - name: Read version number and version code
         run: |
